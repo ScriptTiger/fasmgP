@@ -1,4 +1,4 @@
-[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/thescripttiger%40gmail.com)
+[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://docs.google.com/forms/d/e/1FAIpQLSfBEe5B_zo69OBk19l3hzvBmz3cOV6ol1ufjh0ER1q3-xd2Rg/viewform)
 
 **ATTENTION!!!: fasmgP is currently still in its primordial experimental stages and neither backwards nor forwards compaibility are guaranteed so that the code base does not constrain itself during development and can achieve the best end result. Because of this, it is recommended that you add fasmgP as a git submodule to your project so it can be more easily managed without breaking anything as well as be both backdated and updated as needed.**
 
