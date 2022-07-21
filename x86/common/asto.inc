@@ -1,0 +1,1 @@
+NewStore	asto,	unsafe.Delete

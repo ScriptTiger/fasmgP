@@ -1,0 +1,1 @@
+NewStore	hsto,	unsafe.Close
