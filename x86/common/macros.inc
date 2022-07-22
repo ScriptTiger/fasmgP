@@ -81,6 +81,50 @@ macro	NewStore	symbol,flushaction
 	endcinc
 end macro
 
+;strings.Cnt(HSI,al-rax)(HAX)
+;HDI	source string
+;al-rax	terminator
+;HAX	number of elements before terminator
+macro	NewSCnt	symbol,instruction,length
+	cinc	symbol
+		call	rsto.Stoal
+		mov	HDI,HSI
+		.element:
+		instruction
+		jne	.element
+		sub	HDI,HSI
+		mov	HAX,HDI
+		if length > 1
+			mov	HCX,length
+			xor	HDX,HDX
+			div	HCX
+		end if
+		dec	HAX
+		call	rsto.Clodal
+		ret
+	endcinc
+end macro
+
+;strings.Cpy(HSI,HDI,cl-rcx)(HAX)
+;HSI	source string
+;HDI	destination string
+;cl-rcx	source terminator
+;HAX	Number of elements in output before null terminator
+macro	NewSCpy	symbol,instruction,accumulator,wsize
+	cinc	symbol
+		call	rsto.Stoal
+		xor	HAX,HAX
+		.element:
+		instruction
+		inc	HAX
+		cmp	wsize[HSI],accumulator
+		jne	.element
+		mov	wsize[HDI],0
+		call	rsto.Clodal
+		ret
+	endcinc
+end macro
+
 macro	bios.Exit
 	include	"x86/common/bios.inc"
 end macro

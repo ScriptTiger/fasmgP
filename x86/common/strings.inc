@@ -9,74 +9,15 @@ else if BYTECAP=8
 	strings.CpyH	equ	strings.CpyQ
 end if
 
+NewSCnt	strings.CntB,	scasb,	1
+NewSCnt	strings.CntW,	scasw,	2
+NewSCnt	strings.CntD,	scasd,	4
+NewSCnt	strings.CntQ,	scasq,	8
 
-;strings.CntB(HSI,al)(HAX)
-;HDI    source byte string
-;al     byte terminator
-;HAX    number of bytes before terminator
-cinc    strings.CntB
-        call    rsto.Stoal
-        mov     HDI,HSI
-        .element:
-        scasb
-        jne     .element
-        sub     HDI,HSI
-        mov     HAX,HDI
-        dec     HAX
-        call    rsto.Clodal
-        ret
-endcinc
-
-;strings.CntW(HSI,ax)(HAX)
-;HDI	source word string
-;ax	word terminator
-;HAX	number of words before terminator
-cinc    strings.CntW
-	call    rsto.Stoal
-        mov     HDI,HSI
-        .element:
-        scasw
-        jne     .element
-        sub     HDI,HSI
-        mov     HAX,HDI
-        dec     HAX
-        call    rsto.Clodal
-        ret
-endcinc
-
-;strings.CntD(HSI,eax)(HAX)
-;HDI	source dword string
-;eax	dword terminator
-;HAX	number of dwords before terminator
-cinc    strings.CntD
-	call    rsto.Stoal
-        mov     HDI,HSI
-        .element:
-        scasd
-        jne     .element
-        sub     HDI,HSI
-        mov     HAX,HDI
-        dec     HAX
-        call    rsto.Clodal
-        ret
-endcinc
-
-;strings.CntQ(HSI,rax)(HAX)
-;HDI	source qword string
-;rax	qword terminator
-;HAX	number of qwords before terminator
-cinc    strings.CntQ
-	call    rsto.Stoal
-        mov     HDI,HSI
-        .element:
-        scasq
-        jne     .element
-        sub     HDI,HSI
-        mov     HAX,HDI
-        dec     HAX
-        call    rsto.Clodal
-        ret
-endcinc
+NewSCpy	strings.CpyB,	scasb,	cl,	byte
+NewSCpy	strings.CpyW,	scasw,	cx,	word
+NewSCpy	strings.CpyD,	scasd,	ecx,	dword
+NewSCpy	strings.CpyQ,	scasq,	rcx,	qword
 
 ;strings.CntStrB(HDI,al)(HAX)
 ;HDI    source string array
@@ -168,78 +109,6 @@ cinc    strings.NB
         cmp     HCX,0
         jne     .element
         mov     HAX,HDI
-        call    rsto.Clodal
-        ret
-endcinc
-
-;strings.CpyB(HSI,HDI,cl)(HAX)
-;HSI    source byte string
-;HDI    destination byte string
-;cl     source byte terminator
-;HAX    Number of bytes in output before null terminator
-cinc    strings.CpyB
-        call    rsto.Stoal
-        xor     HAX,HAX
-        .element:
-        movsb
-        inc     HAX
-        cmp     byte[HSI],cl
-        jne    .element
-        mov     byte[HDI],0
-        call    rsto.Clodal
-        ret
-endcinc
-
-;strings.CpyW(HSI,HDI,cx)(HAX)
-;HSI    source word string
-;HDI    destination word string
-;cx     source word terminator
-;HAX    Number of words in output before null terminator
-cinc    strings.CpyW
-        call    rsto.Stoal
-        xor     HAX,HAX
-        .element:
-        movsw
-        inc     HAX
-        cmp     byte[HSI],cx
-        jne    .element
-        mov     byte[HDI],0
-        call    rsto.Clodal
-        ret
-endcinc
-
-;strings.CpyD(HSI,HDI,ecx)(HAX)
-;HSI    source dword string
-;HDI    destination dword string
-;ecx    source dword terminator
-;HAX    Number of dwords in output before null terminator
-cinc    strings.CpyD
-        call    rsto.Stoal
-        xor     HAX,HAX
-        .element:
-        movsd
-        inc     HAX
-        cmp     byte[HSI],ecx
-        jne    .element
-        mov     byte[HDI],0
-        call    rsto.Clodal
-        ret
-endcinc
-
-;strings.CpyQ(HSI,HDI,rcx)(HAX)
-;HSI    source string
-;HDI    destination qword string
-;rcx    source qword terminator
-;HAX    Number of qwords in output before null terminator
-cinc    strings.CpyQ
-        call    rsto.Stoal
-        xor     HAX,HAX
-        .element:
-        movsq
-        inc     HAX
-        cmp     byte[HSI],rcx
-        jne    .element
-        mov     byte[HDI],0
         call    rsto.Clodal
         ret
 endcinc
