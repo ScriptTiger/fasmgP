@@ -1,3 +1,15 @@
+if BYTECAP=2
+	strings.CntH	equ	strings.CntW
+	strings.CpyH	equ	strings.CpyW
+else if BYTECAP=4
+	strings.CntH	equ	strings.CntD
+	strings.CpyH	equ	strings.CpyD
+else if BYTECAP=8
+	strings.CntH	equ	strings.CntQ
+	strings.CpyH	equ	strings.CpyQ
+end if
+
+
 ;strings.CntB(HSI,al)(HAX)
 ;HDI    source byte string
 ;al     byte terminator
@@ -5,9 +17,9 @@
 cinc    strings.CntB
         call    rsto.Stoal
         mov     HDI,HSI
-        .character:
+        .element:
         scasb
-        jne     .character
+        jne     .element
         sub     HDI,HSI
         mov     HAX,HDI
         dec     HAX
@@ -15,21 +27,52 @@ cinc    strings.CntB
         ret
 endcinc
 
-;strings.CntH(HSI,HAX)(HAX)
-;HSI    source double word string
-;HAX    Highest word terminator
-;HAX    Number of highest words before terminator
-cinc     strings.CntH
-        call    rsto.Stoal
+;strings.CntW(HSI,ax)(HAX)
+;HDI	source word string
+;ax	word terminator
+;HAX	number of words before terminator
+cinc    strings.CntW
+	call    rsto.Stoal
         mov     HDI,HSI
-        .character:
-        SCASH
-        jne     .character
+        .element:
+        scasw
+        jne     .element
         sub     HDI,HSI
         mov     HAX,HDI
-        mov     HCX,BYTECAP
-        xor     HDX,HDX
-        div     HCX
+        dec     HAX
+        call    rsto.Clodal
+        ret
+endcinc
+
+;strings.CntD(HSI,eax)(HAX)
+;HDI	source dword string
+;eax	dword terminator
+;HAX	number of dwords before terminator
+cinc    strings.CntD
+	call    rsto.Stoal
+        mov     HDI,HSI
+        .element:
+        scasd
+        jne     .element
+        sub     HDI,HSI
+        mov     HAX,HDI
+        dec     HAX
+        call    rsto.Clodal
+        ret
+endcinc
+
+;strings.CntQ(HSI,rax)(HAX)
+;HDI	source qword string
+;rax	qword terminator
+;HAX	number of qwords before terminator
+cinc    strings.CntQ
+	call    rsto.Stoal
+        mov     HDI,HSI
+        .element:
+        scasq
+        jne     .element
+        sub     HDI,HSI
+        mov     HAX,HDI
         dec     HAX
         call    rsto.Clodal
         ret
@@ -42,13 +85,13 @@ endcinc
 cinc    strings.CntStrB
         call    rsto.Stoal
         xor     HCX,HCX
-        .character:
+        .element:
         scasb
-        jne     .character
+        jne     .element
         inc     HCX
         scasb
         je      .done
-        jmp     .character
+        jmp     .element
         .done:
         mov     HAX,HCX
         call    rsto.Clodal
@@ -63,12 +106,12 @@ endcinc
 cinc strings.CmpB
         call    rsto.Stoal
         xor     HAX,HAX
-        .character:
+        .element:
         cmpsb
         jne     .mismatch
         cmp     byte[HSI-1],cl
         je      .match
-        jmp     .character
+        jmp     .element
         .mismatch:
         inc     HAX
         .match:
@@ -84,12 +127,12 @@ endcinc
 cinc    strings.PrfxB
         call    rsto.Stoal
         xor     HAX,HAX
-        .character:
+        .element:
         cmpsb
         jne     .mismatch
         cmp     byte[HSI],cl
         je      .match
-        jmp     .character
+        jmp     .element
         .mismatch:
         inc     HAX
         .match:
@@ -103,9 +146,9 @@ endcinc
 ;HAX    copy of resultant edi pointer
 cinc    strings.NxtB
         call    rsto.Stoal
-        .character:
+        .element:
         scasb
-        jne     .character
+        jne     .element
         mov     HAX,HDI
         call    rsto.Clodal
         ret
@@ -118,49 +161,85 @@ endcinc
 ;HAX    copy of resultant edi pointer
 cinc    strings.NB
         call    rsto.Stoal
-        .character:
+        .element:
         scasb
-        jne     .character
+        jne     .element
         dec     HCX
         cmp     HCX,0
-        jne     .character
+        jne     .element
         mov     HAX,HDI
         call    rsto.Clodal
         ret
 endcinc
 
 ;strings.CpyB(HSI,HDI,cl)(HAX)
-;HSI    source string
-;HDI    destination string
-;cl     source terminator
+;HSI    source byte string
+;HDI    destination byte string
+;cl     source byte terminator
 ;HAX    Number of bytes in output before null terminator
 cinc    strings.CpyB
         call    rsto.Stoal
         xor     HAX,HAX
-        .character:
+        .element:
         movsb
         inc     HAX
         cmp     byte[HSI],cl
-        jne    .character
+        jne    .element
         mov     byte[HDI],0
         call    rsto.Clodal
         ret
 endcinc
 
-;strings.CpyH(HSI,HDI,HCX)(HAX)
-;HSI    source string
-;HDI    destination string
-;HCX    source terminator
-;HAX    Number of highest words in output before null terminator
-cinc    strings.CpyH
+;strings.CpyW(HSI,HDI,cx)(HAX)
+;HSI    source word string
+;HDI    destination word string
+;cx     source word terminator
+;HAX    Number of words in output before null terminator
+cinc    strings.CpyW
         call    rsto.Stoal
         xor     HAX,HAX
-        .character:
-        MOVSH
+        .element:
+        movsw
         inc     HAX
-        cmp     HWORD[HSI],HCX
-        jne    .character
-        mov     HWORD[HDI],0
+        cmp     byte[HSI],cx
+        jne    .element
+        mov     byte[HDI],0
+        call    rsto.Clodal
+        ret
+endcinc
+
+;strings.CpyD(HSI,HDI,ecx)(HAX)
+;HSI    source dword string
+;HDI    destination dword string
+;ecx    source dword terminator
+;HAX    Number of dwords in output before null terminator
+cinc    strings.CpyD
+        call    rsto.Stoal
+        xor     HAX,HAX
+        .element:
+        movsd
+        inc     HAX
+        cmp     byte[HSI],ecx
+        jne    .element
+        mov     byte[HDI],0
+        call    rsto.Clodal
+        ret
+endcinc
+
+;strings.CpyQ(HSI,HDI,rcx)(HAX)
+;HSI    source string
+;HDI    destination qword string
+;rcx    source qword terminator
+;HAX    Number of qwords in output before null terminator
+cinc    strings.CpyQ
+        call    rsto.Stoal
+        xor     HAX,HAX
+        .element:
+        movsq
+        inc     HAX
+        cmp     byte[HSI],rcx
+        jne    .element
+        mov     byte[HDI],0
         call    rsto.Clodal
         ret
 endcinc
