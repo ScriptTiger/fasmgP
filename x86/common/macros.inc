@@ -4,13 +4,29 @@ struc	store	cap
 
 end struc
 
+macro	cpusha
+	if BYTECAP=2
+		pusha
+	else
+		call	rsto.Stoal
+	end if
+end macro
+
+macro	cpopa
+	if BYTECAP=2
+		popa
+	else
+		call	rsto.Clodal
+	end if
+end macro
+
 macro	NewStore	symbol,flushaction
 
 	symbol:
 
 	;.Validate(HAX)()
 	cinc	.Validate
-		call    rsto.Stoal
+		cpusha
 		cmp     [.Length],0
 		je      .invalid
 		cmp     HAX,0
@@ -28,13 +44,13 @@ macro	NewStore	symbol,flushaction
 		.invalid:
 		mov     HAX,0
 		.done:
-		call    rsto.Clodal
+		cpopa
 		ret
 	endcinc
 
 	;.Flush()()
 	cinc    .Flush
-		call    rsto.Stoal
+		cpusha
 		cmp     [.Length],0
 		je      .done
 		mov     HCX,.Store
@@ -45,13 +61,13 @@ macro	NewStore	symbol,flushaction
 		jne     .pointer
 		mov     [.Length],0
 		.done:
-		call    rsto.Clodal
+		cpopa
 		ret
 	endcinc
 
 	;.Prune(HAX)()
 	cinc    .Prune
-		call    rsto.Stoal
+		cpusha
 		cmp     [.Length],0
 		je      .done
 		cmp     HAX,0
@@ -76,7 +92,7 @@ macro	NewStore	symbol,flushaction
 		.adjustlen:
 		sub     [.Length],BYTECAP
 		.done:
-		call    rsto.Clodal
+		cpopa
 		ret
 	endcinc
 end macro
@@ -87,7 +103,7 @@ end macro
 ;HAX	number of elements before terminator
 macro	NewSCnt	symbol,instruction,length
 	cinc	symbol
-		call	rsto.Stoal
+		cpusha
 		mov	HDI,HSI
 		.element:
 		instruction
@@ -100,7 +116,7 @@ macro	NewSCnt	symbol,instruction,length
 			div	HCX
 		end if
 		dec	HAX
-		call	rsto.Clodal
+		cpopa
 		ret
 	endcinc
 end macro
@@ -112,7 +128,7 @@ end macro
 ;HAX	Number of elements in output before null terminator
 macro	NewSCpy	symbol,instruction,accumulator,wsize
 	cinc	symbol
-		call	rsto.Stoal
+		cpusha
 		xor	HAX,HAX
 		.element:
 		instruction
@@ -120,21 +136,95 @@ macro	NewSCpy	symbol,instruction,accumulator,wsize
 		cmp	wsize[HSI],accumulator
 		jne	.element
 		mov	wsize[HDI],0
-		call	rsto.Clodal
+		cpopa
 		ret
 	endcinc
 end macro
 
-macro	bios.Exit
-	include	"x86/common/bios.inc"
-end macro
-
 macro	common_lib
-	include "x86/common/rsto.inc"
 	include "x86/common/strings.inc"
+	include "x86/common/rsto.inc"
 	include "x86/common/asto.inc"
 	include "x86/common/hsto.inc"
 end macro
+
+macro	bios.Entry
+	mov	HBP,stackbp
+	mov	HSP,HBP
+end macro
+
+macro	mbr.Entry
+	bios.Entry
+        mov     [btdrv],dl
+end macro
+
+macro	bios.Exit
+	bios.Exit:
+	include "x86/common/strings.inc"
+	include	"x86/common/bios.inc"
+
+	;data
+	common_definitions
+
+	;bss
+	common_reservations
+
+	if defined STACKCAPACITY
+		rb	STACKCAPACITY
+	else
+		rb	4096
+	end if
+	stackbp:
+end macro
+
+macro	mbr.Exit
+	mbr.Exit:
+	include "x86/common/strings.inc"
+	include	"x86/common/bios.inc"
+
+	btdrv   rb      1
+
+	;Assembly-time MBR info
+	macro dspaddr msg,iaddr
+		display "MBR ",msg," "
+		repeat  4
+			addr = "0" + (iaddr) shr (16 - % * 4) and 0fh
+			if addr > "9"
+				addr = addr + "A" - "9" - 1
+			end if
+			display addr
+		end repeat
+		display "h",13,10
+	end macro
+	dspaddr "code starts at",7c00h
+	dspaddr "code ends at",$
+	dspaddr "limit is",7e00h
+
+	;Padding
+	mbrpad  rb      510 - ($ - 7c00h)
+
+	;Magic Number
+	dw     0aa55h
+
+	;data
+	common_definitions
+
+	;bss
+	common_reservations
+
+	if defined STACKCAPACITY
+		rb	STACKCAPACITY
+	else
+		rb	4096
+	end if
+	stackbp:
+end macro
+
+if BYTECAP=2
+	macro	stack	cap
+		STACKCAPACITY	=	cap
+	end macro
+end if
 
 macro   cinc    symbol
 	if used symbol
@@ -153,18 +243,15 @@ end macro
 
 macro   common_definitions
 	cincl   eol,    db      EOL
-
-	if used astack|\
-	   used pastack
-		pastack DH      astack+ASCAP
-	end if
-
+	cincl	astackp,DH	astackb
 end macro
 
 macro   common_reservations
 	if used astack|\
-	   used pastack
+	   used astackp|\
+	   used	astackb
 		astack  rb      ASCAP
+		astackb:
 	end if
 
 	cincl   os.Stdin,       RH      1

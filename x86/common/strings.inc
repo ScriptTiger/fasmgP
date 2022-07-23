@@ -24,7 +24,7 @@ NewSCpy	strings.CpyQ,	scasq,	rcx,	qword
 ;al     terminator
 ;HAX    number of strings
 cinc    strings.CntStrB
-        call    rsto.Stoal
+	cpusha
         xor     HCX,HCX
         .element:
         scasb
@@ -35,7 +35,7 @@ cinc    strings.CntStrB
         jmp     .element
         .done:
         mov     HAX,HCX
-        call    rsto.Clodal
+	cpopa
         ret
 endcinc
 
@@ -45,7 +45,7 @@ endcinc
 ;cl     terminator
 ;HAX    0/exact match,1/no exact match
 cinc strings.CmpB
-        call    rsto.Stoal
+	cpusha
         xor     HAX,HAX
         .element:
         cmpsb
@@ -56,7 +56,7 @@ cinc strings.CmpB
         .mismatch:
         inc     HAX
         .match:
-        call    rsto.Clodal
+	cpopa
         ret
 endcinc
 
@@ -66,7 +66,7 @@ endcinc
 ;cl     source string terminator
 ;HAX    0/prefix match,1/no prefix match
 cinc    strings.PrfxB
-        call    rsto.Stoal
+	cpusha
         xor     HAX,HAX
         .element:
         cmpsb
@@ -77,7 +77,7 @@ cinc    strings.PrfxB
         .mismatch:
         inc     HAX
         .match:
-        call    rsto.Clodal
+	cpopa
         ret
 endcinc
 
@@ -86,12 +86,12 @@ endcinc
 ;al     byte terminator
 ;HAX    copy of resultant edi pointer
 cinc    strings.NxtB
-        call    rsto.Stoal
+	cpusha
         .element:
         scasb
         jne     .element
         mov     HAX,HDI
-        call    rsto.Clodal
+	cpopa
         ret
 endcinc
 
@@ -101,7 +101,7 @@ endcinc
 ;HCX    nth string, starting at 0
 ;HAX    copy of resultant edi pointer
 cinc    strings.NB
-        call    rsto.Stoal
+	cpusha
         .element:
         scasb
         jne     .element
@@ -109,7 +109,7 @@ cinc    strings.NB
         cmp     HCX,0
         jne     .element
         mov     HAX,HDI
-        call    rsto.Clodal
+	cpopa
         ret
 endcinc
 
@@ -120,11 +120,11 @@ endcinc
 ;dl     destination terminator
 ;HAX    copy of resultant edi pointer
 cinc    strings.CpynB
-        call    rsto.Stoal
+	cpusha
         dec     HCX
         rep     movsb
         mov     byte[HDI],dl
-        call    rsto.Clodal
+	cpopa
         mov     HAX,HDI
         ret
 endcinc
