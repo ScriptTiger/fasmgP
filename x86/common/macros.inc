@@ -149,7 +149,9 @@ macro	common_lib
 end macro
 
 macro	bios.Entry
-	mov	HBP,stackbp
+	mov	bp,stacksegment
+	mov	ss,bp
+	mov	HBP,stackbase
 	mov	HSP,HBP
 end macro
 
@@ -163,18 +165,17 @@ macro	bios.Exit
 	include "x86/common/strings.inc"
 	include	"x86/common/bios.inc"
 
-	;data
+	datasegment:
 	common_definitions
-
-	;bss
 	common_reservations
 
+	stacksegment:
 	if defined STACKCAPACITY
 		rb	STACKCAPACITY
 	else
 		rb	4096
 	end if
-	stackbp:
+	stackbase:
 end macro
 
 macro	mbr.Exit
@@ -206,18 +207,15 @@ macro	mbr.Exit
 	;Magic Number
 	dw     0aa55h
 
-	;data
-	common_definitions
-
-	;bss
 	common_reservations
 
+	stacksegment:
 	if defined STACKCAPACITY
 		rb	STACKCAPACITY
 	else
 		rb	4096
 	end if
-	stackbp:
+	stackbase:
 end macro
 
 if BYTECAP=2
