@@ -133,7 +133,7 @@ macro	NewSCpy	symbol,instruction,accumulator,wsize
 		.element:
 		instruction
 		inc	HAX
-		cmp	wsize[HSI],accumulator
+		cmp	[HSI],accumulator
 		jne	.element
 		mov	wsize[HDI],0
 		cpopa

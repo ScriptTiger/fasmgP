@@ -14,10 +14,10 @@ NewSCnt	strings.CntW,	scasw,	2
 NewSCnt	strings.CntD,	scasd,	4
 NewSCnt	strings.CntQ,	scasq,	8
 
-NewSCpy	strings.CpyB,	scasb,	cl,	byte
-NewSCpy	strings.CpyW,	scasw,	cx,	word
-NewSCpy	strings.CpyD,	scasd,	ecx,	dword
-NewSCpy	strings.CpyQ,	scasq,	rcx,	qword
+NewSCpy	strings.CpyB,	movsb,	cl,	byte
+NewSCpy	strings.CpyW,	movsw,	cx,	word
+NewSCpy	strings.CpyD,	movsd,	ecx,	dword
+NewSCpy	strings.CpyQ,	movsq,	rcx,	qword
 
 ;strings.CntStrB(HDI,al)(HAX)
 ;HDI    source string array
