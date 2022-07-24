@@ -148,6 +148,41 @@ macro	common_lib
 	include "x86/common/hsto.inc"
 end macro
 
+macro	mbr.Std	entry,etc&
+	org	7c00h
+	jmp	entry
+	mbr.BPB	etc
+end macro
+
+macro	mbr.BPB	oem,id,volume
+
+	;8 bytes for OEM Label
+	db	oem
+
+	dw	512
+	db	1
+	dw	1
+	db	2
+	dw	224
+	dw	2880
+	db	0f0h
+	dw	9
+	dw	18
+	dw	2
+	rd	1
+	rd	1
+	rw	1
+	db	41
+
+	;Volume ID
+	dd	id
+
+	;11 bytes for volume label
+	db	volume
+
+	db	"FAT12   "
+end macro
+
 macro	bios.Entry
 	mov	bp,stacksegment
 	mov	ss,bp
