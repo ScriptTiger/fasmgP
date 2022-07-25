@@ -88,6 +88,7 @@ macro	NewStore	symbol,flushaction
 		mov     HSI,HDI
 		sub     HDI,BYTECAP
 		xor     HCX,HCX
+		xor	HDX,HDX
 		call    strings.CpyH
 		.adjustlen:
 		sub     [.Length],BYTECAP
@@ -125,17 +126,18 @@ end macro
 ;HSI	source string
 ;HDI	destination string
 ;cl-rcx	source terminator
+;dl-rdx	destination terminator
 ;HAX	Number of elements in output before null terminator
-macro	NewSCpy	symbol,instruction,accumulator,wsize
+macro	NewSCpy	symbol,instruction,counter,wsize,data
 	cinc	symbol
 		cpusha
 		xor	HAX,HAX
 		.element:
 		instruction
 		inc	HAX
-		cmp	[HSI],accumulator
+		cmp	[HSI],counter
 		jne	.element
-		mov	wsize[HDI],0
+		mov	wsize[HDI],data
 		cpopa
 		ret
 	endcinc
@@ -192,7 +194,7 @@ end macro
 
 macro	mbr.Entry
 	bios.Entry
-        mov     [btdrv],dl
+	mov     [btdrv],dl
 end macro
 
 macro	bios.Exit

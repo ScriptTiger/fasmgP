@@ -32,9 +32,9 @@ endcinc
 
 ;bios.GetKey()()
 cinc	bios.GetKey
-        xor     ah,ah
-        int     16h
-        ret
+	xor	ah,ah
+	int	16h
+	ret
 endcinc
 
 bios.Reboot	equ	0ffffh:0

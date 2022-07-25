@@ -1,78 +1,78 @@
-macro   windows_lib
-        include "x86/windows/unsafe.inc"
-        include "x86/windows/os.inc"
-        include "x86/windows/libc.inc"
+macro	windows_lib
+	include	"x86/windows/unsafe.inc"
+	include	"x86/windows/os.inc"
+	include	"x86/windows/libc.inc"
 end macro
 
-macro   all_lib
-        common_lib
-        windows_lib
+macro	all_lib
+	common_lib
+	windows_lib
 end macro
 
-macro   os.Entry
+macro	os.Entry
 	if used rsto.Length|\
 	   used bufio.Length|\
 	   used asto.Length
-		xor     HCX,HCX
+		xor	HCX,HCX
 	end if
 
-        if used rsto.Length
-                mov     [rsto.Length],HCX
-        end if
+	if used rsto.Length
+		mov	[rsto.Length],HCX
+	end if
 
-        if used bufio.Length
-                mov     [bufio.Length],HCX
-        end if
+	if used bufio.Length
+		mov     [bufio.Length],HCX
+	end if
 
-        if used hsto.Length
-                mov     [hsto.Length],HCX
-        end if
+	if used hsto.Length
+		mov     [hsto.Length],HCX
+	end if
 
-        if used asto.Length
-                mov     [asto.Length],HCX
-        end if
+	if used asto.Length
+		mov     [asto.Length],HCX
+	end if
 
-        if used os.Stdin
-                invoke  GetStdHandle,\
-                        STD_INPUT_HANDLE
-                mov     [os.Stdin],HAX
+	if used os.Stdin
+		invoke  GetStdHandle,\
+			STD_INPUT_HANDLE
+		mov     [os.Stdin],HAX
 		mov	HWORD[hsto.Store],HAX
 		add	HWORD[hsto.Length],BYTECAP
-        end if
+	end if
 
-        if used os.Stdout
-                invoke  GetStdHandle,\
-                        STD_OUTPUT_HANDLE
-                mov     [os.Stdout],HAX
+	if used os.Stdout
+		invoke  GetStdHandle,\
+			STD_OUTPUT_HANDLE
+		mov     [os.Stdout],HAX
 		mov	HWORD[hsto.Store],HAX
 		add	HWORD[hsto.Length],BYTECAP
-        end if
+	end if
 
-        if used os.Stderr
-                invoke  GetStdHandle,\
-                        STD_ERROR_HANDLE
-                mov     [os.Stderr],HAX
+	if used os.Stderr
+		invoke  GetStdHandle,\
+			STD_ERROR_HANDLE
+		mov     [os.Stderr],HAX
 		mov	HWORD[hsto.Store],HAX
 		add	HWORD[hsto.Length],BYTECAP
-        end if
+	end if
 
-        if used os.Prchp
-                invoke  GetProcessHeap
-                mov     [os.Prchp],HAX
-        end if
+	if used os.Prchp
+		invoke  GetProcessHeap
+		mov     [os.Prchp],HAX
+	end if
 
-        if used os.Cmdline|\
-           used os.Argc|\
-           used os.Argv
-                invoke  GetCommandLine
-                mov     [os.Cmdline],HAX
-                call    os.FmtArgs
-        end if
+	if used os.Cmdline|\
+	   used os.Argc|\
+	   used os.Argv
+		invoke  GetCommandLine
+		mov     [os.Cmdline],HAX
+		call    os.FmtArgs
+	end if
 
-        if used os.Penv
-                invoke  GetEnvironmentStrings
-                mov     [os.Penv],HAX
-        end if
+	if used os.Penv
+		invoke  GetEnvironmentStrings
+		mov     [os.Penv],HAX
+	end if
 end macro
 
 ;Places both the os.Exit procedure as well as a label so it can be easily jumped to
@@ -134,26 +134,26 @@ macro	clibf	symbol,file
 end macro
 
 macro	cimp symbol,import
-        if used symbol
-                symbol  dw      0
-                        db      import,0
-        end if
+	if used symbol
+		symbol  dw      0
+			db      import,0
+	end if
 end macro
 
 macro   imports
-        if used ExitProcess|\
-           used HeapFree|\
-           used GetStdHandle|\
-           used GetProcessHeap|\
-           used GetCommandLine|\
-           used GetEnvironmentStrings|\
-           used CloseHandle|\
-           used FreeEnvironmentStrings|\
-           used HeapAlloc|\
-           used ReadFile|\
-           used WriteFile|\
-           used FlushConsoleInputBuffer|\
-           used Sleep
+	if used ExitProcess|\
+	   used HeapFree|\
+	   used GetStdHandle|\
+	   used GetProcessHeap|\
+	   used GetCommandLine|\
+	   used GetEnvironmentStrings|\
+	   used CloseHandle|\
+	   used FreeEnvironmentStrings|\
+	   used HeapAlloc|\
+	   used ReadFile|\
+	   used WriteFile|\
+	   used FlushConsoleInputBuffer|\
+	   used Sleep
 		implib	kernel_name,	kernel_table
 	end if
 
@@ -165,9 +165,9 @@ macro   imports
 		implib	urlmon_name,	urlmon_table
 	end if
 
-        dd      0,0,0,0,0
+	dd      0,0,0,0,0
 
-        cinc    kernel_table
+	cinc    kernel_table
 		ctble	ExitProcess,		_ExitProcess
 		ctble	HeapFree,		_HeapFree
 		ctble	GetStdHandle,		_GetStdHandle
@@ -188,7 +188,7 @@ macro   imports
 	cinc	msvcrt_table
 		ctble	_kbhit,			__kbhit
 		DH	0
-        endcinc
+	endcinc
 
 	cinc	urlmon_table
 		ctble	URLDownloadToFile,	_URLDownloadToFile
