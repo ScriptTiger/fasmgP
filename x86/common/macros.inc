@@ -24,6 +24,18 @@ macro	NewStore	symbol,flushaction
 
 	symbol:
 
+	;.Sto(HAX)()
+	cinc	.Sto
+		cpusha
+		mov     HCX,.Store
+		add     HCX,[.Length]
+		add     [.Length],BYTECAP
+		mov     [HCX],HAX
+		mov     HWORD[HCX+BYTECAP],0
+		cpopa
+		ret
+	endcinc
+
 	;.Validate(HAX)()
 	cinc	.Validate
 		cpusha
@@ -32,18 +44,18 @@ macro	NewStore	symbol,flushaction
 		cmp     HAX,0
 		je      .invalid
 		mov     HDI,.Store
-		.pointer:
+		.velement:
 		scasd
 		je      .valid
 		cmp     HWORD[HDI-BYTECAP],0
 		je      .invalid
-		jmp     .pointer
+		jmp     .velement
 		.valid:
 		mov     HAX,1
-		jmp     .done
+		jmp     .vdone
 		.invalid:
 		mov     HAX,0
-		.done:
+		.vdone:
 		cpopa
 		ret
 	endcinc
@@ -52,15 +64,16 @@ macro	NewStore	symbol,flushaction
 	cinc    .Flush
 		cpusha
 		cmp     [.Length],0
-		je      .done
+		je      .fdone
 		mov     HCX,.Store
-		.pointer:
+		.felement:
 		call    flushaction
+		mov	HWORD[HCX],0
 		add     HCX,BYTECAP
 		cmp     HWORD[HCX],0
-		jne     .pointer
+		jne     .felement
 		mov     [.Length],0
-		.done:
+		.fdone:
 		cpopa
 		ret
 	endcinc
@@ -69,16 +82,16 @@ macro	NewStore	symbol,flushaction
 	cinc    .Prune
 		cpusha
 		cmp     [.Length],0
-		je      .done
+		je      .pdone
 		cmp     HAX,0
-		je      .done
+		je      .pdone
 		mov     HDI,.Store
-		.pointer:
+		.pelement:
 		scasd
 		je      .match
 		cmp     HWORD[HDI-BYTECAP],0
-		je      .done
-		jmp     .pointer
+		je      .pdone
+		jmp     .pelement
 		.match:
 		cmp     HWORD[HDI],0
 		jne     .prune
@@ -92,7 +105,7 @@ macro	NewStore	symbol,flushaction
 		call    strings.CpyH
 		.adjustlen:
 		sub     [.Length],BYTECAP
-		.done:
+		.pdone:
 		cpopa
 		ret
 	endcinc
@@ -122,12 +135,12 @@ macro	NewSCnt	symbol,instruction,length
 	endcinc
 end macro
 
-;strings.Cpy(HSI,HDI,cl-rcx)(HAX)
+;strings.Cpy(HSI,HDI,cl-rcx,dl-rdx)(HAX)
 ;HSI	source string
 ;HDI	destination string
 ;cl-rcx	source terminator
 ;dl-rdx	destination terminator
-;HAX	Number of elements in output before null terminator
+;HAX	Number of elements in output before terminator
 macro	NewSCpy	symbol,instruction,counter,wsize,data
 	cinc	symbol
 		cpusha

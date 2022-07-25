@@ -1,1 +1,2 @@
-NewStore	hsto,	unsafe.Close
+NewStore	hsto,\
+		unsafe.Close

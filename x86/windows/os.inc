@@ -101,30 +101,24 @@ cinc    os.New
 		[os.Prchp],\
 		HEAP_ZERO_MEMORY,\
 		HCX
-	mov     HCX,asto.Store
-	add     HCX,[asto.Length]
-	add     [asto.Length],BYTECAP
-	mov     [HCX],HAX
-	mov     dword[HCX+4],0
+	call	asto.Sto
 	call    rsto.Clodal
 	ret
 endcinc
 
 ;os.Delete(HCX)()
 ;HCX    Heap allocation to free
-cinc	os.Delete
-	NewInvalidate	asto.Validate,\
-			unsafe.Delete,\
-			asto.Prune
-endcinc
+NewInvalidate	os.Delete,\
+		asto.Validate,\
+		unsafe.Delete,\
+		asto.Prune
 
 ;os.Close(HCX)()
 ;HCX    Handle to close
-cinc	os.Close
-	NewInvalidate	hsto.Validate,\
-			unsafe.Close,\
-			hsto.Prune
-endcinc
+NewInvalidate	os.Close,\
+		hsto.Validate,\
+		unsafe.Close,\
+		hsto.Prune
 
 ;os.Cin(HDI,HCX,HDX)(HAX)
 ;HDI    Pointer to string input

@@ -36,24 +36,21 @@ macro	os.Entry
 		invoke  GetStdHandle,\
 			STD_INPUT_HANDLE
 		mov     [os.Stdin],HAX
-		mov	HWORD[hsto.Store],HAX
-		add	HWORD[hsto.Length],BYTECAP
+		call	hsto.Sto
 	end if
 
 	if used os.Stdout
 		invoke  GetStdHandle,\
 			STD_OUTPUT_HANDLE
 		mov     [os.Stdout],HAX
-		mov	HWORD[hsto.Store],HAX
-		add	HWORD[hsto.Length],BYTECAP
+		call	hsto.Sto
 	end if
 
 	if used os.Stderr
 		invoke  GetStdHandle,\
 			STD_ERROR_HANDLE
 		mov     [os.Stderr],HAX
-		mov	HWORD[hsto.Store],HAX
-		add	HWORD[hsto.Length],BYTECAP
+		call	hsto.Sto
 	end if
 
 	if used os.Prchp
@@ -102,19 +99,21 @@ macro	os.Exit
 	all_lib
 end macro
 
-macro	NewInvalidate	validate,action,prune
-;(HCX)()
-	call	rsto.Stoal
-	mov	HAX,[HCX]
-	call	validate
-	cmp	HAX,0
-	je	.done
-	call	action
-	mov	HAX,[HCX]
-	call	prune
-	.done:
-	call    rsto.Clodal
-	ret
+;invalidate(HCX)()
+macro	NewInvalidate	symbol,validate,action,prune
+	cinc	symbol
+		call	rsto.Stoal
+		mov	HAX,[HCX]
+		call	validate
+		cmp	HAX,0
+		je	.done
+		call	action
+		mov	HAX,[HCX]
+		call	prune
+		.done:
+		call    rsto.Clodal
+		ret
+	endcinc
 end macro
 
 macro	implib	name,table
