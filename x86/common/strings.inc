@@ -53,6 +53,42 @@ NewSCpy	strings.CpyB,\
 	byte,\
 	dl
 
+;strings.CpyBW(HSI,HDI,cx,dl)(HAX)
+;HSI	source byte string
+;HDI	destination byte string
+;cx	source word terminator
+;dl	destination byte terminator
+;HAX	Number of bytes in output before word terminator
+NewSCpy	strings.CpyBW,\
+	movsb,\
+	cx,\
+	byte,\
+	dl
+
+;strings.CpyBD(HSI,HDI,ecx,dl)(HAX)
+;HSI	source byte string
+;HDI	destination byte string
+;ecx	source dword terminator
+;dl	destination byte terminator
+;HAX	Number of bytes in output before dword terminator
+NewSCpy	strings.CpyBD,\
+	movsb,\
+	ecx,\
+	byte,\
+	dl
+
+;strings.CpyBQ(HSI,HDI,rcx,dl)(HAX)
+;HSI	source byte string
+;HDI	destination byte string
+;rcx	source qword terminator
+;dl	destination byte terminator
+;HAX	Number of bytes in output before qword terminator
+NewSCpy	strings.CpyBQ,\
+	movsb,\
+	rcx,\
+	byte,\
+	dl
+
 ;strings.CpyW(HSI,HDI,cx,dx)(HAX)
 ;HSI	source word string
 ;HDI	destination word string
@@ -65,6 +101,30 @@ NewSCpy	strings.CpyW,\
 	word,\
 	dx
 
+;strings.CpyWD(HSI,HDI,ecx,dx)(HAX)
+;HSI	source word string
+;HDI	destination word string
+;ecx	source dword terminator
+;dx	destination word terminator
+;HAX	Number of words in output before dword terminator
+NewSCpy	strings.CpyWD,\
+	movsw,\
+	ecx,\
+	word,\
+	dx
+
+;strings.CpyWQ(HSI,HDI,rcx,dx)(HAX)
+;HSI	source word string
+;HDI	destination word string
+;rcx	source qword terminator
+;dx	destination word terminator
+;HAX	Number of words in output before qword terminator
+NewSCpy	strings.CpyWQ,\
+	movsw,\
+	rcx,\
+	word,\
+	dx
+
 ;strings.CpyD(HSI,HDI,ecx,edx)(HAX)
 ;HSI	source dword string
 ;HDI	destination dword string
@@ -74,6 +134,18 @@ NewSCpy	strings.CpyW,\
 NewSCpy	strings.CpyD,\
 	movsd,\
 	ecx,\
+	dword,\
+	edx
+
+;strings.CpyDQ(HSI,HDI,rcx,edx)(HAX)
+;HSI	source dword string
+;HDI	destination dword string
+;rcx	source qword terminator
+;edx	destination dword terminator
+;HAX	Number of dwords in output before qword terminator
+NewSCpy	strings.CpyDQ,\
+	movsd,\
+	rcx,\
 	dword,\
 	edx
 
