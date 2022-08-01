@@ -1,12 +1,15 @@
 if BYTECAP=2
 	strings.CntH	equ	strings.CntW
 	strings.CpyH	equ	strings.CpyW
+	strings.CpynH	equ	strings.CpynW
 else if BYTECAP=4
 	strings.CntH	equ	strings.CntD
 	strings.CpyH	equ	strings.CpyD
+	strings.CpynH	equ	strings.CpynD
 else if BYTECAP=8
 	strings.CntH	equ	strings.CntQ
 	strings.CpyH	equ	strings.CpyQ
+	strings.CpynH	equ	strings.CpynQ
 end if
 
 ;strings.CntB(HSI,al)(HAX)
@@ -161,6 +164,46 @@ NewSCpy	strings.CpyQ,\
 	qword,\
 	rdx
 
+;strings.CpynB(HSI,HDI,HCX,dl)(HAX)
+;HDI	source byte string
+;HDI	destination byte string
+;HCX	number of bytes in output, including byte terminator
+;dl	destination byte terminator
+;HAX	copy of resultant destination byte string pointer
+NewSCpn	strings.CpynB,\
+	movsb,\
+	dl
+
+;strings.CpynW(HSI,HDI,HCX,dx)(HAX)
+;HDI	source word string
+;HDI	destination word string
+;HCX	number of words in output, including word terminator
+;dx	destination word terminator
+;HAX	copy of resultant destination word string pointer
+NewSCpn	strings.CpynW,\
+	movsw,\
+	dx
+
+;strings.CpynD(HSI,HDI,HCX,edx)(HAX)
+;HDI	source dword string
+;HDI	destination dword string
+;HCX	number of dwords in output, including dword terminator
+;edx	destination dword terminator
+;HAX	copy of resultant destination dword string pointer
+NewSCpn	strings.CpynD,\
+	movsd,\
+	edx
+
+;strings.CpynQ(HSI,HDI,HCX,rdx)(HAX)
+;HDI	source qword string
+;HDI	destination qword string
+;HCX	number of qwords in output, including qword terminator
+;rdx	destination qword terminator
+;HAX	copy of resultant destination qword string pointer
+NewSCpn	strings.CpynQ,\
+	movsq,\
+	rdx
+
 ;strings.CntStrB(HDI,al)(HAX)
 ;HDI    source string array
 ;al     terminator
@@ -252,21 +295,5 @@ cinc    strings.NB
         jne     .element
         mov     HAX,HDI
 	cpopa
-        ret
-endcinc
-
-;strings.CpynB(HSI,HDI,HCX,dl)(HAX)
-;HDI    source string
-;HDI    destination string
-;HCX    number of bytes in output, including terminator
-;dl     destination terminator
-;HAX    copy of resultant edi pointer
-cinc    strings.CpynB
-	cpusha
-        dec     HCX
-        rep     movsb
-        mov     byte[HDI],dl
-	cpopa
-        mov     HAX,HDI
         ret
 endcinc

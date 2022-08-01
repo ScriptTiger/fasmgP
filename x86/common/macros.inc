@@ -156,6 +156,24 @@ macro	NewSCpy	symbol,instruction,counter,wsize,data
 	endcinc
 end macro
 
+;strings.Cpyn(HSI,HDI,HCX,dl-rdx)(HAX)
+;HDI	source string
+;HDI	destination string
+;HCX	number of elements in output, including terminator
+;dl-rdx	destination terminator
+;HAX	copy of resultant destination string pointer
+macro	NewSCpn	symbol,instruction,data
+	cinc	symbol
+		cpusha
+		dec     HCX
+		rep     instruction
+		mov     [HDI],data
+		cpopa
+		mov     HAX,HDI
+		ret
+	endcinc
+end macro
+
 macro	common_lib
 	include "x86/common/strings.inc"
 	include "x86/common/rsto.inc"
