@@ -27,11 +27,16 @@ macro	NewStore	symbol,flushaction
 	;.Sto(HAX)()
 	cinc	.Sto
 		cpusha
-		mov     HCX,.Store
-		add     HCX,[.Length]
-		add     [.Length],BYTECAP
-		mov     [HCX],HAX
-		mov     HWORD[HCX+BYTECAP],0
+		mov	HBX,HAX
+		mov	HCX,[.Length]
+		mov	HAX,BYTECAP
+		mul	HCX
+		mov	HCX,HAX
+		mov	HAX,HBX
+		add	HCX,.Store
+		inc	[.Length]
+		mov	[HCX],HAX
+		mov	HWORD[HCX+BYTECAP],0
 		cpopa
 		ret
 	endcinc
@@ -44,17 +49,16 @@ macro	NewStore	symbol,flushaction
 		cmp     HAX,0
 		je      .invalid
 		mov     HDI,.Store
-		.velement:
-		scasd
+		mov	HCX,[.Length]
+		SCASH
+		je	.valid
+		repne	SCASH
 		je      .valid
-		cmp     HWORD[HDI-BYTECAP],0
-		je      .invalid
-		jmp     .velement
+		.invalid:
+		xor	HAX,HAX
+		jmp	.vdone
 		.valid:
 		mov     HAX,1
-		jmp     .vdone
-		.invalid:
-		mov     HAX,0
 		.vdone:
 		cpopa
 		ret
@@ -86,25 +90,24 @@ macro	NewStore	symbol,flushaction
 		cmp     HAX,0
 		je      .pdone
 		mov     HDI,.Store
-		.pelement:
-		scasd
-		je      .match
-		cmp     HWORD[HDI-BYTECAP],0
-		je      .pdone
-		jmp     .pelement
+		mov	HCX,[.Length]
+		SCASH
+		je	.match
+		repne	SCASH
+		je	.match
+		jmp	.pdone
 		.match:
-		cmp     HWORD[HDI],0
-		jne     .prune
-		mov     HWORD[HDI-BYTECAP],0
-		jmp     .adjustlen
+		cmp	HCX,0
+		jne	.prune
+		mov	HWORD[HDI-BYTECAP],0
+		jmp	.adjustlen
 		.prune:
-		mov     HSI,HDI
-		sub     HDI,BYTECAP
-		xor     HCX,HCX
+		mov	HSI,HDI
+		sub	HDI,BYTECAP
 		xor	HDX,HDX
-		call    strings.CpyH
+		call	strings.CpynH
 		.adjustlen:
-		sub     [.Length],BYTECAP
+		dec	[.Length]
 		.pdone:
 		cpopa
 		ret
