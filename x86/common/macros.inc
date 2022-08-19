@@ -182,7 +182,6 @@ macro	common_lib
 	include "x86/common/rsto.inc"
 	include "x86/common/asto.inc"
 	include "x86/common/hsto.inc"
-	include	"x86/common/cstack.inc"
 end macro
 
 macro	mbr.Std	entry,etc&
