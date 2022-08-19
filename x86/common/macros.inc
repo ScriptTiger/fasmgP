@@ -6,7 +6,7 @@ end struc
 
 macro	cpusha
 	if BYTECAP=2
-		cstack.Pusha
+		call	cstack.Pusha
 	else
 		call	rsto.Stoal
 	end if
@@ -14,7 +14,7 @@ end macro
 
 macro	cpopa
 	if BYTECAP=2
-		cstack.Popa
+		call	cstack.Popa
 	else
 		call	rsto.Clodal
 	end if
