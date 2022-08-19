@@ -6,7 +6,7 @@ end struc
 
 macro	cpusha
 	if BYTECAP=2
-		pusha
+		cstack.Pusha
 	else
 		call	rsto.Stoal
 	end if
@@ -14,7 +14,7 @@ end macro
 
 macro	cpopa
 	if BYTECAP=2
-		popa
+		cstack.Popa
 	else
 		call	rsto.Clodal
 	end if
@@ -182,6 +182,7 @@ macro	common_lib
 	include "x86/common/rsto.inc"
 	include "x86/common/asto.inc"
 	include "x86/common/hsto.inc"
+	include	"x86/common/cstack.inc"
 end macro
 
 macro	mbr.Std	entry,etc&
@@ -220,9 +221,9 @@ macro	mbr.BPB	oem,id,volume
 end macro
 
 macro	bios.Entry
-	mov	bp,stacksegment
+	mov	bp,cstack.Seg
 	mov	ss,bp
-	mov	HBP,stackbase
+	mov	HBP,cstack.Base
 	mov	HSP,HBP
 end macro
 
@@ -233,6 +234,7 @@ end macro
 
 macro	bios.Exit
 	bios.Exit:
+	include	"x86/common/cstack.inc"
 	include "x86/common/strings.inc"
 	include	"x86/common/bios.inc"
 
@@ -240,17 +242,20 @@ macro	bios.Exit
 	common_definitions
 	common_reservations
 
-	stacksegment:
+	swap	RH	1
+
+	cstack.Seg:
 	if defined STACKCAPACITY
 		rb	STACKCAPACITY
 	else
 		rb	4096
 	end if
-	stackbase:
+	cstack.Base:
 end macro
 
 macro	mbr.Exit
 	mbr.Exit:
+	include	"x86/common/cstack.inc"
 	include "x86/common/strings.inc"
 	include	"x86/common/bios.inc"
 
@@ -280,13 +285,15 @@ macro	mbr.Exit
 
 	common_reservations
 
-	stacksegment:
+	swap	RH	1
+
+	cstack.Seg:
 	if defined STACKCAPACITY
 		rb	STACKCAPACITY
 	else
 		rb	4096
 	end if
-	stackbase:
+	cstack.Base:
 end macro
 
 if BYTECAP=2
@@ -311,16 +318,16 @@ macro   cincl   symbol,etc&
 end macro
 
 macro   common_definitions
-	cincl   eol,    db      EOL
-	cincl	astackp,DH	astackb
+	cincl   eol,		db	EOL
+	cincl	astack.Ptr,	DH	astack.Base
 end macro
 
 macro   common_reservations
 	if used astack|\
-	   used astackp|\
-	   used	astackb
-		astack  rb      ASCAP
-		astackb:
+	   used astack.Ptr|\
+	   used	astack.Base
+		astack	rb	ASCAP
+		astack.Base:
 	end if
 
 	cincl   os.Stdin,       RH      1

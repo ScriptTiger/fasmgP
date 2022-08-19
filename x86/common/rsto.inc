@@ -1,8 +1,8 @@
 ;rsto.Stoal()()
 ;Store current register set in the register store
 cinc    rsto.Stoal
-        sub     [astackp],BYTECAP
-        mov     [astackp],HAX
+        sub     [astack.Ptr],BYTECAP
+        mov     [astack.Ptr],HAX
         mov     HAX,rsto.Store
         add     HAX,[rsto.Length]
         add     [rsto.Length],RSTOINC
@@ -11,16 +11,16 @@ cinc    rsto.Stoal
         mov     [HAX+(BYTECAP*2)],HBX
         mov     [HAX+(BYTECAP*3)],HSI
         mov     [HAX+(BYTECAP*4)],HDI
-        mov     HAX,[astackp]
-        add     [astackp],BYTECAP
+        mov     HAX,[astack.Ptr]
+        add     [astack.Ptr],BYTECAP
         ret
 endcinc
 
 ;rsto.Clodal()()
 ;Load register set from store and clear them from the register store length
 cinc    rsto.Clodal
-        sub     [astackp],BYTECAP
-        mov     [astackp],HAX
+        sub     [astack.Ptr],BYTECAP
+        mov     [astack.Ptr],HAX
         mov     HAX,rsto.Store
         sub     [rsto.Length],RSTOINC
         add     HAX,[rsto.Length]
@@ -29,16 +29,16 @@ cinc    rsto.Clodal
         mov     HBX,[HAX+(BYTECAP*2)]
         mov     HSI,[HAX+(BYTECAP*3)]
         mov     HDI,[HAX+(BYTECAP*4)]
-        mov     HAX,[astackp]
-        add     [astackp],BYTECAP
+        mov     HAX,[astack.Ptr]
+        add     [astack.Ptr],BYTECAP
         ret
 endcinc
 
 ;rsto.Lodal()()
 ;Load register set from store
 cinc    rsto.Lodal
-        sub     [astackp],BYTECAP
-        mov     [astackp],HAX
+        sub     [astack.Ptr],BYTECAP
+        mov     [astack.Ptr],HAX
         mov     HAX,rsto.Store
         add     HAX,[rsto.Length]
         sub     HAX,RSTOINC
@@ -47,7 +47,7 @@ cinc    rsto.Lodal
         mov     HBX,[HAX+(BYTECAP*2)]
         mov     HSI,[HAX+(BYTECAP*3)]
         mov     HDI,[HAX+(BYTECAP*4)]
-        mov     HAX,[astackp]
-        add     [astackp],BYTECAP
+        mov     HAX,[astack.Ptr]
+        add     [astack.Ptr],BYTECAP
         ret
 endcinc
