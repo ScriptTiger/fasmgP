@@ -61,13 +61,13 @@ macro	os.Entry
 	if used os.Cmdline|\
 	   used os.Argc|\
 	   used os.Argv
-		invoke  GetCommandLine
+		invoke  GetCommandLineA
 		mov     [os.Cmdline],HAX
 		call    os.FmtArgs
 	end if
 
 	if used os.Penv
-		invoke  GetEnvironmentStrings
+		invoke  GetEnvironmentStringsA
 		mov     [os.Penv],HAX
 	end if
 end macro
@@ -89,7 +89,7 @@ macro	os.Exit
 	end if
 
 	if used os.Penv
-		invoke	FreeEnvironmentStrings,\
+		invoke	FreeEnvironmentStringsA,\
 			[os.Penv]
 	end if
 
@@ -144,10 +144,10 @@ macro   imports
 	   used HeapFree|\
 	   used GetStdHandle|\
 	   used GetProcessHeap|\
-	   used GetCommandLine|\
-	   used GetEnvironmentStrings|\
+	   used GetCommandLineA|\
+	   used GetEnvironmentStringsA|\
 	   used CloseHandle|\
-	   used FreeEnvironmentStrings|\
+	   used FreeEnvironmentStringsA|\
 	   used HeapAlloc|\
 	   used ReadFile|\
 	   used WriteFile|\
@@ -160,7 +160,7 @@ macro   imports
 		implib	msvcrt_name,	msvcrt_table
 	end if
 
-	if used URLDownloadToFile
+	if used URLDownloadToFileA
 		implib	urlmon_name,	urlmon_table
 	end if
 
@@ -171,10 +171,10 @@ macro   imports
 		ctble	HeapFree,		_HeapFree
 		ctble	GetStdHandle,		_GetStdHandle
 		ctble	GetProcessHeap,		_GetProcessHeap
-		ctble	GetCommandLine,		_GetCommandLine
-		ctble	GetEnvironmentStrings,	_GetEnvironmentStrings
+		ctble	GetCommandLineA,	_GetCommandLineA
+		ctble	GetEnvironmentStringsA,	_GetEnvironmentStringsA
 		ctble	CloseHandle,		_CloseHandle
-		ctble	FreeEnvironmentStrings,	_FreeEnvironmentStrings
+		ctble	FreeEnvironmentStringsA,_FreeEnvironmentStringsA
 		ctble	HeapAlloc,		_HeapAlloc
 		ctble	ReadFile,		_ReadFile
 		ctble	WriteFile,		_WriteFile
@@ -190,7 +190,7 @@ macro   imports
 	endcinc
 
 	cinc	urlmon_table
-		ctble	URLDownloadToFile,	_URLDownloadToFile
+		ctble	URLDownloadToFileA,	_URLDownloadToFileA
 		DH      0
 	endcinc
 
@@ -202,15 +202,15 @@ macro   imports
 	cimp	_HeapFree,			"HeapFree"
 	cimp	_GetStdHandle,			"GetStdHandle"
 	cimp	_GetProcessHeap,		"GetProcessHeap"
-	cimp	_GetCommandLine,		"GetCommandLineA"
-	cimp	_GetEnvironmentStrings,		"GetEnvironmentStringsA"
+	cimp	_GetCommandLineA,		"GetCommandLineA"
+	cimp	_GetEnvironmentStringsA,	"GetEnvironmentStringsA"
 	cimp	_CloseHandle,			"CloseHandle"
-	cimp	_FreeEnvironmentStrings,	"FreeEnvironmentStringsA"
+	cimp	_FreeEnvironmentStringsA,	"FreeEnvironmentStringsA"
 	cimp	_HeapAlloc,			"HeapAlloc"
 	cimp	_ReadFile,			"ReadFile"
 	cimp	_WriteFile,			"WriteFile"
 	cimp	_FlushConsoleInputBuffer,	"FlushConsoleInputBuffer"
 	cimp	_Sleep,				"Sleep"
 	cimp	__kbhit,			"_kbhit"
-	cimp	_URLDownloadToFile,		"URLDownloadToFileA"
+	cimp	_URLDownloadToFileA,		"URLDownloadToFileA"
 end macro
